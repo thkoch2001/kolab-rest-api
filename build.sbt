@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
     "javax.ws.rs" % "jsr311-api" % "1.1.1",
     "com.sun.jersey" % "jersey-server" % "1.11",
     "com.sun.jersey" % "jersey-core" % "1.11",
+    "com.sun.jersey" % "jersey-servlet" % "1.11",
     "com.sun.jersey.contribs" % "jersey-guice" % "1.11",
     "com.google.inject" % "guice" % "3.0",
     "com.google.guava" % "guava" % "11.0.1",
