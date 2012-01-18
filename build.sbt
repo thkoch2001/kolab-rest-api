@@ -20,7 +20,8 @@ libraryDependencies ++= Seq(
     "com.sun.jersey.contribs" % "jersey-guice" % "1.11",
     "com.google.inject" % "guice" % "3.0",
     "com.google.guava" % "guava" % "11.0.1",
-    "org.apache.abdera" % "abdera-server" % "[1.1.2,)"
+    "org.apache.abdera" % "abdera-server" % "[1.1.2,)",
+    "org.mnode.ical4j" % "ical4j-vcard" % "[0.9.0,)"
 //    "com.sun.jersey" % "jersey-json" % "1.11",
 //    "org.scala-tools.testing" % "specs_2.9.0" % "1.6.8" % "test", // For specs.org tests
 //    "javax.servlet" % "servlet-api" % "2.5" % "provided->default"
