@@ -15,18 +15,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.abdera.Abdera;
-import org.apache.abdera.model.Base;
-import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Element;
-import org.apache.abdera.model.Entry;
-import org.apache.abdera.model.Feed;
-import org.apache.abdera.model.Service;
+import org.apache.abdera2.Abdera;
+import org.apache.abdera2.model.Base;
+import org.apache.abdera2.model.Document;
+import org.apache.abdera2.model.Element;
+import org.apache.abdera2.model.Entry;
+import org.apache.abdera2.model.Feed;
+import org.apache.abdera2.model.Service;
 
+import com.google.inject.Inject;
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 
 public abstract class AbderaReaderWriterJerseyProvider<T extends Base> extends AbstractMessageReaderWriterProvider<T> {
-    private static final Abdera abdera = new Abdera();
+    private final Abdera abdera;
+
+    protected AbderaReaderWriterJerseyProvider(Abdera abdera) {
+        this.abdera = abdera;
+    }
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -60,6 +65,10 @@ public abstract class AbderaReaderWriterJerseyProvider<T extends Base> extends A
     public static class FeedProvider extends AbderaReaderWriterJerseyProvider<Feed> {
         protected static final Class<Feed> clazz = Feed.class;
 
+        @Inject public FeedProvider(Abdera abdera) {
+            super(abdera);
+        }
+
         @Override
         protected Class<Feed> getClazz() { return clazz; }
     }
@@ -68,6 +77,10 @@ public abstract class AbderaReaderWriterJerseyProvider<T extends Base> extends A
     public static class EntryProvider extends AbderaReaderWriterJerseyProvider<Entry> {
         protected static final Class<Entry> clazz = Entry.class;
 
+        @Inject public EntryProvider(Abdera abdera) {
+            super(abdera);
+        }
+
         @Override
         protected Class<Entry> getClazz() { return clazz; }
     }
@@ -75,6 +88,10 @@ public abstract class AbderaReaderWriterJerseyProvider<T extends Base> extends A
     @Provider @Produces(APPLICATION_ATOM_XML) @Consumes(APPLICATION_ATOM_XML)
     public static class ServiceProvider extends AbderaReaderWriterJerseyProvider<Service> {
         protected static final Class<Service> clazz = Service.class;
+
+        @Inject public ServiceProvider(Abdera abdera) {
+            super(abdera);
+        }
 
         @Override
         protected Class<Service> getClazz() { return clazz; }

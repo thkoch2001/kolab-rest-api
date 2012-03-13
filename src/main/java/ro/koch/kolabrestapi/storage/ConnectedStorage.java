@@ -1,46 +1,35 @@
 package ro.koch.kolabrestapi.storage;
 
-import java.util.Map.Entry;
+import java.util.Map;
+import java.util.Set;
 
-import net.fortuna.ical4j.vcard.Property.Id;
-import net.fortuna.ical4j.vcard.VCard;
-import ro.koch.kolabrestapi.models.VCardListItem;
+import ro.koch.kolabrestapi.models.Collection;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Table;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 
 public class ConnectedStorage {
-    private final Table<String, String, VCard> collections = HashBasedTable.create();
+    private final Set<Collection> collections = Sets.newHashSet();
+    private final Map<String, CollectionStorage> collectionStorages = Maps.newHashMap();
 
-    public ImmutableSet<String> getCollections() {
-        return ImmutableSet.copyOf(collections.rowKeySet());
+    @Inject
+    public ConnectedStorage() {
+        add(new Collection("contacts", "Kontakte"));
+        add(new Collection("calendar", "Kalender"));
     }
 
-    public ImmutableList<VCardListItem> getItems(String collection, int offset, int limit) {
-        final ImmutableList.Builder<VCardListItem> list = ImmutableList.builder();
-        for(final Entry<String, VCard> item : collections.row(collection).entrySet()) {
-            list.add(new VCardListItem(item.getValue()));
-        }
-        return list.build();
+    public ImmutableSet<Collection> getCollections() {
+        return ImmutableSet.copyOf(collections);
     }
 
-    public String createItem(String collection, VCard item) {
-        final String id = item.getProperty(Id.UID).getValue();
-        collections.put(collection, id, item);
-        return id;
+    public CollectionStorage getConnectionStorage(String name) {
+        return collectionStorages.get(name);
     }
 
-    public VCard getItem(String collection, String id) {
-        return collections.get(collection, id);
-    }
-
-    public void updateItem(String collection, String id, VCard item) {
-        collections.put(collection, id, item);
-    }
-
-    public void deleteItem(String collection, String id) {
-        collections.remove(collection, id);
+    private void add(Collection collection) {
+        collections.add(collection);
+        collectionStorages.put(collection.getName(), new CollectionStorage());
     }
 }

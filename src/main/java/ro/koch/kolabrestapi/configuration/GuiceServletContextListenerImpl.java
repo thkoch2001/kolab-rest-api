@@ -5,7 +5,7 @@ import static com.google.inject.Guice.createInjector;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.abdera.Abdera;
+import org.apache.abdera2.Abdera;
 
 import ro.koch.kolabrestapi.Routes;
 import ro.koch.kolabrestapi.storage.Storages;

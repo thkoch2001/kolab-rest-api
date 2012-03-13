@@ -5,28 +5,29 @@ import static ro.koch.kolabrestapi.Routes.PathParams.AUTHORITY;
 import static ro.koch.kolabrestapi.Routes.PathParams.COLLECTION;
 import static ro.koch.kolabrestapi.Routes.PathParams.MEMBER;
 
+import java.util.List;
+import java.util.Map.Entry;
+
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import ro.koch.kolabrestapi.resources.Collection;
 import ro.koch.kolabrestapi.resources.Member;
 import ro.koch.kolabrestapi.resources.Services;
-import ro.koch.kolabrestapi.storage.ConnectedStorage;
-import ro.koch.kolabrestapi.storage.Storages;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Provides;
+import com.google.inject.Singleton;
 
-@Path("")
+@Path("") @Singleton
 public class Routes {
     public static final String PATH_COLLECTIONS = "/collections";
     public static final String PATH_SERVICE = "/service";
 
     private final Injector injector;
-    private final ImmutableMap.Builder<String, String> pathParams = ImmutableMap.builder();
 
     @Inject
     public Routes(Injector injector) {
@@ -35,7 +36,6 @@ public class Routes {
 
     @Path("/{"+AUTHORITY+"}/")
     public Authority authority(@PathParam(AUTHORITY) String authority) {
-        pathParams.put(AUTHORITY, authority);
         return new Authority();
     }
 
@@ -47,47 +47,58 @@ public class Routes {
 
         @Path(PATH_COLLECTIONS+"/{"+COLLECTION+"}")
         public Collection collection(@PathParam(COLLECTION) String collection) {
-            pathParams.put(COLLECTION, collection);
             return serve(Collection.class);
         }
 
         @Path(PATH_COLLECTIONS+"/{"+COLLECTION+"}/{"+MEMBER+"}/")
         public Member collection(@PathParam(COLLECTION) String collection, @PathParam(MEMBER) String member) {
-            pathParams.put(COLLECTION, collection);
-            pathParams.put(MEMBER, member);
             return serve(Member.class);
         }
     }
 
     @SuppressWarnings("unchecked")
     private <K> K serve(Class<?> clazz) {
-        return (K)injector.createChildInjector(
-        new AbstractModule(){
-            @Override protected void configure() {
-                bind(PathParams.class).toInstance(new PathParams(pathParams.build()));
-            }
-
-            @SuppressWarnings("unused")
-            @Provides public ConnectedStorage connectedStorage(Storages storages, PathParams pathParams) {
-                return storages.getForAuthority(pathParams.get(AUTHORITY));
-            }
-        }
-        ).getInstance(clazz);
+        return (K)injector.getInstance(clazz);
     }
 
-    public class PathParams {
+    public static class PathParams {
         public static final String AUTHORITY = "authority";
         public static final String COLLECTION = "collection";
         public static final String MEMBER = "member";
 
         private final ImmutableMap<String, String> map;
 
-        public PathParams(ImmutableMap<String, String> pathParams) {
-            this.map = checkNotNull(pathParams);
+        @Inject
+        public PathParams(UriInfo uriInfo) {
+            final ImmutableMap.Builder<String, String> pathParams = ImmutableMap.builder();
+            for(Entry<String, List<String>> entry : uriInfo.getPathParameters().entrySet()) {
+                pathParams.put(entry.getKey(), entry.getValue().get(0));
+            }
+            this.map = pathParams.build();
         }
 
         public String get(String name) {
             return map.get(name);
+        }
+    }
+
+    public static class LinkBuilder {
+        private final UriInfo uriInfo;
+        private final PathParams pathParams;
+
+        @Inject
+        public LinkBuilder(UriInfo uriInfo, PathParams pathParams) {
+            this.uriInfo = uriInfo;
+            this.pathParams = pathParams;
+        }
+
+        public String collectionUri(String collection) {
+            final UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+            return uriBuilder
+                    .path(pathParams.get(AUTHORITY))
+                    .path(PATH_COLLECTIONS)
+                    .path(collection)
+                    .build().toString();
         }
     }
 }

@@ -4,25 +4,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static ro.koch.kolabrestapi.Routes.PathParams.AUTHORITY;
 import static ro.koch.kolabrestapi.Routes.PathParams.COLLECTION;
 
-import java.net.URI;
-
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import net.fortuna.ical4j.vcard.VCard;
-
-import org.apache.abdera.Abdera;
-import org.apache.abdera.model.Entry;
-import org.apache.abdera.model.Feed;
+import org.apache.abdera2.Abdera;
+import org.apache.abdera2.model.Entry;
+import org.apache.abdera2.model.Feed;
+import org.joda.time.DateTime;
 
 import ro.koch.kolabrestapi.Routes.PathParams;
-import ro.koch.kolabrestapi.models.VCardListItem;
+import ro.koch.kolabrestapi.storage.CollectionStorage.StoredResource;
 import ro.koch.kolabrestapi.storage.ConnectedStorage;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 
 public class Collection {
@@ -40,24 +32,25 @@ public class Collection {
     @GET
     public Feed get() {
         final Feed feed = abdera.newFeed();
-        final ImmutableList<VCardListItem> items = storage.getItems(pathParams.get(COLLECTION), 0, -1);
+        final Iterable<StoredResource> it = storage.getConnectionStorage(pathParams.get(COLLECTION))
+                                                   .listUpdates(0, 20);
         feed.setTitle(pathParams.get(AUTHORITY) + " sometitle "+ pathParams.get(COLLECTION));
-        for(final VCardListItem item : items) {
+        for(final StoredResource stRes : it) {
             final Entry entry = abdera.newEntry();
-            entry.addAuthor(item.getAuthor());
-            entry.setTitle(item.getTitle());
-            entry.setUpdated(item.getUpdated());
-            entry.setSummary(item.getSummary());
+            //entry.addAuthor(item.getAuthor());
+            //entry.setTitle(item.getTitle());
+            entry.setUpdated(new DateTime(stRes.updated));
+            //entry.setSummary(item.getSummary());
             feed.addEntry(entry);
         }
         return feed;
     }
 
-    @POST
-    public Response post(@Context UriInfo info, VCard vcard) {
-        final String id = storage.createItem(pathParams.get(COLLECTION), vcard);
-        final URI uri = info.getAbsolutePathBuilder().path(id).build();
-        return Response.created(uri).build();
-    }
+//    @POST
+//    public Response post(@Context UriInfo info, VCard vcard) {
+//        final String id = storage.createItem(pathParams.get(COLLECTION), vcard);
+//        final URI uri = info.getAbsolutePathBuilder().path(id).build();
+//        return Response.created(uri).build();
+//    }
 
 }

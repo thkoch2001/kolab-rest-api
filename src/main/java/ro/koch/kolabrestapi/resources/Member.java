@@ -6,8 +6,8 @@ import static ro.koch.kolabrestapi.Routes.PathParams.MEMBER;
 
 import javax.ws.rs.GET;
 
-import org.apache.abdera.Abdera;
-import org.apache.abdera.model.Entry;
+import org.apache.abdera2.Abdera;
+import org.apache.abdera2.model.Entry;
 
 import ro.koch.kolabrestapi.Routes.PathParams;
 
