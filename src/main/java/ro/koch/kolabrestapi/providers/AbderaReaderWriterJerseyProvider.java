@@ -1,6 +1,7 @@
 package ro.koch.kolabrestapi.providers;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +62,9 @@ public abstract class AbderaReaderWriterJerseyProvider<T extends Base> extends A
         return (T) element;
     }
 
-    @Provider @Produces(APPLICATION_ATOM_XML) @Consumes(APPLICATION_ATOM_XML)
+    @Provider
+    @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
+    @Consumes(APPLICATION_ATOM_XML)
     public static class FeedProvider extends AbderaReaderWriterJerseyProvider<Feed> {
         protected static final Class<Feed> clazz = Feed.class;
 
@@ -73,7 +76,9 @@ public abstract class AbderaReaderWriterJerseyProvider<T extends Base> extends A
         protected Class<Feed> getClazz() { return clazz; }
     }
 
-    @Provider @Produces(APPLICATION_ATOM_XML) @Consumes(APPLICATION_ATOM_XML)
+    @Provider
+    @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
+    @Consumes(APPLICATION_ATOM_XML)
     public static class EntryProvider extends AbderaReaderWriterJerseyProvider<Entry> {
         protected static final Class<Entry> clazz = Entry.class;
 
@@ -85,7 +90,9 @@ public abstract class AbderaReaderWriterJerseyProvider<T extends Base> extends A
         protected Class<Entry> getClazz() { return clazz; }
     }
 
-    @Provider @Produces(APPLICATION_ATOM_XML) @Consumes(APPLICATION_ATOM_XML)
+    @Provider
+    @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
+    @Consumes(APPLICATION_ATOM_XML)
     public static class ServiceProvider extends AbderaReaderWriterJerseyProvider<Service> {
         protected static final Class<Service> clazz = Service.class;
 

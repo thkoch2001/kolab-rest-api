@@ -1,8 +1,11 @@
 package ro.koch.kolabrestapi.resources;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
 
 import org.apache.abdera2.Abdera;
 import org.apache.abdera2.factory.Factory;
@@ -30,7 +33,7 @@ public class Services {
         this.abdera = checkNotNull(abdera);
     }
 
-    @GET
+    @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
     public Service get(@InjectParam LinkBuilder linkBuilder) {
         final Factory factory = abdera.getFactory();
         final Service service = factory.newService();
@@ -38,7 +41,7 @@ public class Services {
         for(final Collection collection : storage.getCollections()) {
             final org.apache.abdera2.model.Collection abderaCol = factory.newCollection();
             abderaCol.setTitle(collection.getTitle());
-            abderaCol.setHref(linkBuilder.collectionUri(collection.getName()));
+            abderaCol.setHref(linkBuilder.collectionUri(collection.getName()).toString());
             workspace.addCollection(abderaCol);
         }
         service.addWorkspace(workspace);
