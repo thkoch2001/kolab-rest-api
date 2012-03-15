@@ -14,12 +14,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.apache.abdera2.Abdera;
+import org.apache.abdera2.ext.history.FeedPagingHelper;
 import org.apache.abdera2.model.Feed;
 
 import ro.koch.kolabrestapi.Clock;
+import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
 import ro.koch.kolabrestapi.Routes.PathParams;
 import ro.koch.kolabrestapi.models.Resource;
+import ro.koch.kolabrestapi.storage.CollectionStorage.ResultList;
 import ro.koch.kolabrestapi.storage.ConnectedStorage;
 
 import com.google.inject.Inject;
@@ -38,15 +41,18 @@ public class Collection {
     }
 
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
-    public Feed get(@InjectParam LinkBuilder linkBuilder) {
+    public Feed get(@InjectParam LinkBuilder linkBuilder, @InjectParam PaginationRange range) {
         final Feed feed = abdera.newFeed();
         final String collection = pathParams.get(COLLECTION);
-        final Iterable<Resource> it = storage.getConnectionStorage(collection)
-                                                   .listUpdates(0, 20);
+        final ResultList resultList = storage.getConnectionStorage(collection)
+                                                   .listUpdates(range);
         feed.setTitle(pathParams.get(AUTHORITY) + " sometitle "+ collection);
         ResourceAbderaAdapter adapter = new ResourceAbderaAdapter(abdera, linkBuilder, collection);
-        for(final Resource resource : it) {
+        for(final Resource resource : resultList.it) {
             adapter.addResourceToFeed(feed, resource);
+        }
+        if(range.moreToCome(resultList.total)) {
+            FeedPagingHelper.setNext(feed, linkBuilder.next(range).toString());
         }
         return feed;
     }

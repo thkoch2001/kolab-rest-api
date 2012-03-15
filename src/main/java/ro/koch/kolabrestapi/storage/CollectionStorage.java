@@ -11,6 +11,7 @@ import javax.ws.rs.core.EntityTag;
 
 import org.joda.time.DateTime;
 
+import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.models.Resource;
 
 import com.google.common.collect.Lists;
@@ -55,7 +56,21 @@ public class CollectionStorage {
         }
     }
 
-    public Iterable<Resource> listUpdates(int offset, int limit) {
-        return limit(skip(updates, offset), limit);
+    public ResultList listUpdates(PaginationRange range) {
+        return new ResultList(
+                limit(skip(updates, range.offset), range.limit),
+                updates.size()
+                );
+    }
+
+    public static class ResultList {
+        public final Iterable<Resource> it;
+        public final int total;
+
+        public ResultList(Iterable<Resource> it, int total) {
+            super();
+            this.it = it;
+            this.total = total;
+        }
     }
 }

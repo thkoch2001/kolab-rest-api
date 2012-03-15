@@ -127,5 +127,11 @@ public class Routes {
                     .path(id)
                     .build();
         }
+
+        public URI next(PaginationRange range) {
+            return uriInfo.getRequestUriBuilder()
+                    .replaceQueryParam("offset", range.nextOffset())
+                    .build();
+        }
     }
 }
