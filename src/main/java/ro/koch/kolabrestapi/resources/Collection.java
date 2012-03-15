@@ -44,10 +44,9 @@ public class Collection {
         final Iterable<Resource> it = storage.getConnectionStorage(collection)
                                                    .listUpdates(0, 20);
         feed.setTitle(pathParams.get(AUTHORITY) + " sometitle "+ collection);
+        ResourceAbderaAdapter adapter = new ResourceAbderaAdapter(abdera, linkBuilder, collection);
         for(final Resource resource : it) {
-            feed.addEntry(
-                    Entry.buildEntry(abdera, linkBuilder, collection, resource)
-            );
+            adapter.addResourceToFeed(feed, resource);
         }
         return feed;
     }
