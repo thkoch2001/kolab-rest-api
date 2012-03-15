@@ -1,5 +1,6 @@
 package ro.koch.kolabrestapi.models;
 
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
@@ -34,6 +35,11 @@ public class Resource {
         public Meta(DateTime dateTime, String id) {
             this.updated = dateTime;
             this.id = id;
+        }
+
+        public EntityTag getETag() {
+            // TODO for production it is not save enough to just use the timestamp
+            return new EntityTag(updated.toString(),true);
         }
     }
 
