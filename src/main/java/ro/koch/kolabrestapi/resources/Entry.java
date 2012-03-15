@@ -1,9 +1,12 @@
 package ro.koch.kolabrestapi.resources;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
+import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMDELETED_XML;
+import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMDELETED_XML_TYPE;
 import static ro.koch.kolabrestapi.Routes.PathParams.COLLECTION;
 import static ro.koch.kolabrestapi.Routes.PathParams.MEMBER;
 
@@ -53,7 +56,7 @@ public class Entry {
         return condResponse(storage().conditionalPut(member, resource, clock.get(), preconditions));
     }
 
-    @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
+    @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML})
     public Response get(@InjectParam Abdera abdera,
                         @InjectParam LinkBuilder linkBuilder
                         ) {
@@ -63,6 +66,9 @@ public class Entry {
         if(getResult.status == Status.OK) {
             rb
              .tag(getResult.resource.meta.getETag())
+             .type(getResult.resource.isDeleted()
+                    ? APPLICATION_ATOMDELETED_XML_TYPE
+                    : APPLICATION_ATOM_XML_TYPE)
              .entity((new ResourceAbderaAdapter(abdera, linkBuilder, collection))
                       .buildFeedElement(getResult.resource));
         }

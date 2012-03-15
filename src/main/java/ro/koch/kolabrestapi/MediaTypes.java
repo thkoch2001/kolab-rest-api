@@ -8,4 +8,7 @@ public class MediaTypes {
 
     public static final String APPLICATION_VCARD_XML = "application/vcard+xml";
     public static final MediaType APPLICATION_VCARD_XML_TYPE = MediaType.valueOf(APPLICATION_VCARD_XML);
+
+    public static final String APPLICATION_ATOMDELETED_XML = "application/atomdeleted+xml";
+    public static final MediaType APPLICATION_ATOMDELETED_XML_TYPE = MediaType.valueOf(APPLICATION_ATOMDELETED_XML);
 }
