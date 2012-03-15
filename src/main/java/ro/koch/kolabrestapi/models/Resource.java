@@ -20,8 +20,8 @@ public class Resource {
         return new Resource(new Meta(timestamp, meta.id), null, null);
     }
 
-    public Resource update(Resource resource, DateTime timestamp) {
-        return new Resource(new Meta(timestamp, meta.id), body, mediaType);
+    public Resource update(Resource newResource, DateTime timestamp) {
+        return new Resource(new Meta(timestamp, meta.id), newResource.body, newResource.mediaType);
     }
 
     public boolean isDeleted() {
