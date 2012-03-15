@@ -6,7 +6,9 @@ import static com.google.common.collect.Iterables.skip;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.DateTime;
@@ -23,9 +25,11 @@ public class CollectionStorage {
     private final Map<String, Resource> resourcesMap = Maps.newHashMap();
     private final List<Resource> updates = Lists.newLinkedList();
 
+    // TODO different entityTags for different PaginationRanges?
+    private EntityTag entityTag = newEntityTag(null);
+
     public void post(String id, Resource resource) {
-        resourcesMap.put(id, resource);
-        updates.add(0, resource);
+        pushNew(id, resource);
     }
 
     public GetResult conditionalGet(String id, Preconditions preconditions) {
@@ -38,23 +42,17 @@ public class CollectionStorage {
             return GetResult.NOT_MODIFIED;
     }
 
-    public boolean conditionalPut(String id, Resource resource, DateTime timestamp, Preconditions preconditions) {
+    public boolean conditionalPut(String id, Resource newResource, DateTime timestamp, Preconditions preconditions) {
         Resource oldResource = resourcesMap.get(id);
         if(!preconditions.shouldPerform(oldResource.meta.getETag())) return false;
-        removeOlderEntryFromUpdatesList(oldResource);
-        Resource newResource = resource.update(resource, timestamp);
-        resourcesMap.put(id, resource);
-        updates.add(0, newResource);
+        pushUpdate(id, oldResource, oldResource.update(newResource, timestamp));
         return true;
     }
 
     public boolean conditionalDelete(String id, DateTime dateTime, Preconditions preconditions) {
         Resource oldResource = resourcesMap.get(id);
         if(!preconditions.shouldPerform(oldResource.meta.getETag())) return false;
-        removeOlderEntryFromUpdatesList(oldResource);
-        Resource newResource = oldResource.delete(dateTime);
-        updates.add(0, newResource);
-        resourcesMap.put(id, newResource);
+        pushUpdate(id, oldResource, oldResource.delete(dateTime));
         return true;
     }
 
@@ -68,21 +66,53 @@ public class CollectionStorage {
         }
     }
 
-    public ResultList listUpdates(PaginationRange range) {
-        return new ResultList(
-                limit(skip(updates, range.offset), range.limit),
-                updates.size()
-                );
+    public ResultList listUpdates(PaginationRange range, Preconditions preconditions) {
+        if(preconditions.shouldPerform(entityTag)) {
+            return new ResultList(
+                    limit(skip(updates, range.offset), range.limit),
+                    updates.size(), entityTag
+                    );
+        } else {
+            return ResultList.NOT_MODIFIED;
+        }
+    }
+
+    private synchronized void pushUpdate(String id, Resource oldResource, Resource newResource) {
+        removeOlderEntryFromUpdatesList(oldResource);
+        pushNew(id, newResource);
+    }
+
+    private synchronized void pushNew(String id, Resource resource) {
+        updates.add(0, resource);
+        resourcesMap.put(id, resource);
+        entityTag = newEntityTag(resource.meta.updated);
+    }
+
+    private EntityTag newEntityTag(DateTime updated) {
+        return new EntityTag((updated == null ? "0" : updated.toString())
+                + "@" + UUID.randomUUID().toString(), true);
     }
 
     public static class ResultList {
+        public static final ResultList NOT_MODIFIED = new ResultList(Status.NOT_MODIFIED);
         public final Iterable<Resource> it;
         public final int total;
+        public final Status status;
+        public final EntityTag etag;
 
-        public ResultList(Iterable<Resource> it, int total) {
+        public ResultList(Iterable<Resource> it, int total, EntityTag etag) {
             super();
             this.it = it;
             this.total = total;
+            this.status = Status.OK;
+            this.etag = etag;
+        }
+
+        private ResultList(Status status) {
+            this.status = status;
+            this.it = null;
+            this.total = -1;
+            this.etag = null;
         }
     }
 
