@@ -36,7 +36,7 @@ public class Routes {
         this.injector = checkNotNull(injector);
     }
 
-    @Path("/{"+AUTHORITY+"}/")
+    @Path("/{"+AUTHORITY+"}")
     public Authority authority() {
         return new Authority();
     }
@@ -52,12 +52,12 @@ public class Routes {
             return serve(Collection.class);
         }
 
-        @Path(PATH_COLLECTIONS+"/{"+COLLECTION+"}/{"+MEMBER+"}/")
+        @Path(PATH_COLLECTIONS+"/{"+COLLECTION+"}/{"+MEMBER+"}")
         public Entry entry() {
             return serve(Entry.class);
         }
 
-        @Path(PATH_MEDIA+"/{"+COLLECTION+"}/{"+MEMBER+"}/")
+        @Path(PATH_MEDIA+"/{"+COLLECTION+"}/{"+MEMBER+"}")
         public MediaEntry mediaEntry() {
             return serve(MediaEntry.class);
         }

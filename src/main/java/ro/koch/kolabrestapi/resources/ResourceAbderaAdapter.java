@@ -8,6 +8,7 @@ import org.apache.abdera2.ext.tombstones.Tombstone;
 import org.apache.abdera2.model.Entry;
 import org.apache.abdera2.model.ExtensibleElement;
 import org.apache.abdera2.model.Feed;
+import org.apache.abdera2.model.Link;
 import org.joda.time.DateTime;
 
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
@@ -45,11 +46,8 @@ public class ResourceAbderaAdapter {
         entry.setUpdated(new DateTime(resource.meta.updated));
         entry.setId(resource.meta.id);
         entry.setEdited(new DateTime(resource.meta.updated));
-        entry.addLink(new IRI(linkBuilder.mediaEntryUri(collection, resource.meta.id)),
-                      "edit-media",
-                      resource.mediaType.toString(),
-                      null, null, -1l);
-        entry.addLink(new IRI(linkBuilder.entryUri(collection, resource.meta.id)), "edit");
+        entry.addExtension(buildEditLink(resource));
+        entry.addExtension(buildEditMediaLink(resource));
         //entry.setSummary(item.getSummary());
         return entry;
     }
@@ -58,6 +56,22 @@ public class ResourceAbderaAdapter {
         Tombstone tombstone = abdera.getFactory().newExtensionElement(DELETED_ENTRY);
         tombstone.setWhen(resource.meta.updated);
         tombstone.setRef(resource.meta.id);
+        tombstone.addExtension(buildEditLink(resource));
         return tombstone;
+    }
+
+    public Link buildEditLink(final Resource resource) {
+        Link link = abdera.getFactory().newLink();
+        link.setHref(new IRI(linkBuilder.entryUri(collection, resource.meta.id)));
+        link.setRel(Link.REL_EDIT);
+        return link;
+    }
+
+    public Link buildEditMediaLink(final Resource resource) {
+        Link link = abdera.getFactory().newLink();
+        link.setHref(new IRI(linkBuilder.mediaEntryUri(collection, resource.meta.id)));
+        link.setRel(Link.REL_EDIT_MEDIA);
+        link.setMimeType(resource.mediaType.toString());
+        return link;
     }
 }

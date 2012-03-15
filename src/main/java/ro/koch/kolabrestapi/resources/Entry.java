@@ -30,7 +30,7 @@ public class Entry {
             ) {
         final CollectionStorage collectionStorage = connectedStorage.getConnectionStorage(pathParams.get(COLLECTION));
         collectionStorage.conditionalDelete(pathParams.get(MEMBER), clock.get(), null);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     @PUT
@@ -42,7 +42,7 @@ public class Entry {
         String collection = pathParams.get(COLLECTION);
         CollectionStorage collectionStorage = connectedStorage.getConnectionStorage(collection);
         collectionStorage.conditionalPut(pathParams.get(MEMBER), resource, clock.get(), null);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
