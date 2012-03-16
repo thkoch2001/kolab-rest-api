@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.Response.Status.OK;
-import static ro.koch.kolabrestapi.Routes.PathParams.AUTHORITY;
-import static ro.koch.kolabrestapi.Routes.PathParams.COLLECTION;
+import static ro.koch.kolabrestapi.Routes.PathTemplate.AUTHORITY;
+import static ro.koch.kolabrestapi.Routes.PathTemplate.COLLECTION;
 
 import java.util.UUID;
 
@@ -64,7 +64,7 @@ public class Collection {
     private Feed buildFeed(PaginationRange range, ResultList resultList) {
         final Feed feed = abdera.newFeed();
         feed.setTitle(pathParams.get(AUTHORITY) + " sometitle " + collection);
-        ResourceAbderaAdapter adapter = new ResourceAbderaAdapter(abdera, linkBuilder, collection);
+        ResourceAbderaAdapter adapter = new ResourceAbderaAdapter(abdera, linkBuilder);
         for(final Resource resource : resultList.it) {
             adapter.addResourceToFeed(feed, resource);
         }
@@ -81,7 +81,7 @@ public class Collection {
         Resource resource = new Resource(meta, parsedResource.body, parsedResource.mediaType);
 
         storage().post(resource.meta.id, resource);
-        return Response.created(linkBuilder.entryUri(pathParams.get(COLLECTION), resource.meta.id)).build();
+        return Response.created(linkBuilder.entryUri(resource.meta.id)).build();
     }
 
     private CollectionStorage storage() {

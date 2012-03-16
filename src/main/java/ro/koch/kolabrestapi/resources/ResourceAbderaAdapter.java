@@ -17,13 +17,11 @@ import ro.koch.kolabrestapi.models.Resource;
 public class ResourceAbderaAdapter {
     private final Abdera abdera;
     private final LinkBuilder linkBuilder;
-    private final String collection;
 
-    public ResourceAbderaAdapter(Abdera abdera, LinkBuilder linkBuilder, String collection) {
+    public ResourceAbderaAdapter(Abdera abdera, LinkBuilder linkBuilder) {
         super();
         this.abdera = abdera;
         this.linkBuilder = linkBuilder;
-        this.collection = collection;
     }
 
 
@@ -62,14 +60,14 @@ public class ResourceAbderaAdapter {
 
     public Link buildEditLink(final Resource resource) {
         Link link = abdera.getFactory().newLink();
-        link.setHref(new IRI(linkBuilder.entryUri(collection, resource.meta.id)));
+        link.setHref(new IRI(linkBuilder.entryUri(resource.meta.id)));
         link.setRel(Link.REL_EDIT);
         return link;
     }
 
     public Link buildEditMediaLink(final Resource resource) {
         Link link = abdera.getFactory().newLink();
-        link.setHref(new IRI(linkBuilder.mediaEntryUri(collection, resource.meta.id)));
+        link.setHref(new IRI(linkBuilder.mediaEntryUri(resource.meta.id)));
         link.setRel(Link.REL_EDIT_MEDIA);
         link.setMimeType(resource.mediaType.toString());
         return link;

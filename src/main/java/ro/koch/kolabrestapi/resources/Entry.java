@@ -7,8 +7,8 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMDELETED_XML;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMDELETED_XML_TYPE;
-import static ro.koch.kolabrestapi.Routes.PathParams.COLLECTION;
-import static ro.koch.kolabrestapi.Routes.PathParams.MEMBER;
+import static ro.koch.kolabrestapi.Routes.PathTemplate.COLLECTION;
+import static ro.koch.kolabrestapi.Routes.PathTemplate.ENTRY;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -36,31 +36,31 @@ public class Entry {
     private final ConnectedStorage connectedStorage;
     private final Clock clock;
     private final String collection;
-    private final String member;
+    private final String entryId;
     private final Preconditions preconditions;
 
     @Inject
     public Entry(PathParams pathParams, ConnectedStorage connectedStorage, Clock clock, Preconditions preconditions) {
         this.collection = pathParams.get(COLLECTION);
-        this.member = pathParams.get(MEMBER);
+        this.entryId = pathParams.get(ENTRY);
         this.connectedStorage = connectedStorage;
         this.clock = clock;
         this.preconditions = preconditions;
     }
 
     @DELETE public Response delete() {
-        return condResponse(storage().conditionalDelete(member, clock.get(), preconditions));
+        return condResponse(storage().conditionalDelete(entryId, clock.get(), preconditions));
     }
 
     @PUT public Response put(Resource resource) {
-        return condResponse(storage().conditionalPut(member, resource, clock.get(), preconditions));
+        return condResponse(storage().conditionalPut(entryId, resource, clock.get(), preconditions));
     }
 
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML})
     public Response get(@InjectParam Abdera abdera,
                         @InjectParam LinkBuilder linkBuilder
                         ) {
-        GetResult getResult = storage().conditionalGet(member, preconditions);
+        GetResult getResult = storage().conditionalGet(entryId, preconditions);
         ResponseBuilder rb = Response.status(getResult.status);
 
         if(getResult.status == Status.OK) {
@@ -69,7 +69,7 @@ public class Entry {
              .type(getResult.resource.isDeleted()
                     ? APPLICATION_ATOMDELETED_XML_TYPE
                     : APPLICATION_ATOM_XML_TYPE)
-             .entity((new ResourceAbderaAdapter(abdera, linkBuilder, collection))
+             .entity((new ResourceAbderaAdapter(abdera, linkBuilder))
                       .buildFeedElement(getResult.resource));
         }
         return rb.build();
