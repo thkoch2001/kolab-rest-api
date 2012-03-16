@@ -23,8 +23,13 @@ class KolabRestApiModule extends AbstractModule {
     @Singleton
     @Provides def abdera:Abdera = new Abdera (null)
 
+    @RequestScoped
     @Provides def connectedStorage(storages:Storages, pathParams:PathParams):ConnectedStorage =
       storages.getForAuthority(pathParams.get(AUTHORITY))
+
+    @RequestScoped
+    @Provides def collectionStorage(connectedStorage:ConnectedStorage, pathParams:PathParams) =
+      connectedStorage.getCollectionStorage(pathParams.get(COLLECTION))
 
     @RequestScoped
     @Provides def preconditions(headers:HttpHeaders, request:Request):Preconditions =

@@ -1,6 +1,5 @@
 package ro.koch.kolabrestapi.resources;
 
-import static ro.koch.kolabrestapi.Routes.PathTemplate.COLLECTION;
 import static ro.koch.kolabrestapi.Routes.PathTemplate.ENTRY;
 
 import javax.ws.rs.GET;
@@ -12,18 +11,16 @@ import ro.koch.kolabrestapi.Preconditions;
 import ro.koch.kolabrestapi.Routes.PathParams;
 import ro.koch.kolabrestapi.storage.CollectionStorage;
 import ro.koch.kolabrestapi.storage.CollectionStorage.GetResult;
-import ro.koch.kolabrestapi.storage.ConnectedStorage;
 
 import com.sun.jersey.api.core.InjectParam;
 
 public class MediaEntry {
     @GET
-    public Response get(@InjectParam ConnectedStorage connectedStorage,
+    public Response get(@InjectParam CollectionStorage storage,
                         @InjectParam PathParams pathParams,
                         @InjectParam Preconditions preconditions
             ) {
-        CollectionStorage collectionStorage = connectedStorage.getConnectionStorage(pathParams.get(COLLECTION));
-        GetResult getResult = collectionStorage.conditionalGet(pathParams.get(ENTRY), preconditions);
+        GetResult getResult = storage.conditionalGet(pathParams.get(ENTRY), preconditions);
         ResponseBuilder rb = Response.status(getResult.status);
 
         if(getResult.status == Status.OK) {

@@ -24,7 +24,7 @@ public class ConnectedStorage {
         return ImmutableSet.copyOf(collections);
     }
 
-    public CollectionStorage getConnectionStorage(String name) {
+    public CollectionStorage getCollectionStorage(String name) {
         return collectionStorages.get(name);
     }
 

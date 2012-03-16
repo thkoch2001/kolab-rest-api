@@ -100,6 +100,10 @@ public class Routes {
             this.pathParams = pathParams;
         }
 
+        public String getParam(String name) {
+            return pathParams.get(name);
+        }
+
         public URI collectionUri(String collection) {
             return build(T_COLLECTION, ImmutableMap.of(COLLECTION, collection));
         }

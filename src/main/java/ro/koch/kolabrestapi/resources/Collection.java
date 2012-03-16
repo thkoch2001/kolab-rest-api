@@ -23,34 +23,29 @@ import ro.koch.kolabrestapi.Clock;
 import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.Preconditions;
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
-import ro.koch.kolabrestapi.Routes.PathParams;
 import ro.koch.kolabrestapi.models.Resource;
 import ro.koch.kolabrestapi.storage.CollectionStorage;
 import ro.koch.kolabrestapi.storage.CollectionStorage.ResultList;
-import ro.koch.kolabrestapi.storage.ConnectedStorage;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.core.InjectParam;
 
 public class Collection {
     private final Abdera abdera;
-    private final PathParams pathParams;
-    private final ConnectedStorage connectedStorage;
-    private final String collection;
     private final LinkBuilder linkBuilder;
+    private final CollectionStorage storage;
 
     @Inject
-    public Collection(Abdera abdera, PathParams pathParams, ConnectedStorage storage, LinkBuilder linkBuilder) {
-        this.pathParams = checkNotNull(pathParams);
+    public Collection(Abdera abdera, CollectionStorage storage, LinkBuilder linkBuilder) {
         this.abdera = checkNotNull(abdera);
-        this.connectedStorage = checkNotNull(storage);
-        this.collection = pathParams.get(COLLECTION);
-        this.linkBuilder = linkBuilder;
+        this.storage = checkNotNull(storage);
+        this.linkBuilder = checkNotNull(linkBuilder);
     }
 
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
-    public Response get(@InjectParam PaginationRange range, @InjectParam Preconditions preconditions) {
-        ResultList resultList = storage().listUpdates(range, preconditions);
+    public Response get(@InjectParam PaginationRange range,
+                        @InjectParam Preconditions preconditions) {
+        ResultList resultList = storage.listUpdates(range, preconditions);
         ResponseBuilder rb = Response.status(resultList.status);
 
         if(resultList.status == OK) { // else is NOT_MODIFIED
@@ -63,7 +58,7 @@ public class Collection {
 
     private Feed buildFeed(PaginationRange range, ResultList resultList) {
         final Feed feed = abdera.newFeed();
-        feed.setTitle(pathParams.get(AUTHORITY) + " sometitle " + collection);
+        feed.setTitle(linkBuilder.getParam(AUTHORITY) + "'s collection of " + linkBuilder.getParam(COLLECTION));
         ResourceAbderaAdapter adapter = new ResourceAbderaAdapter(abdera, linkBuilder);
         for(final Resource resource : resultList.it) {
             adapter.addResourceToFeed(feed, resource);
@@ -80,11 +75,7 @@ public class Collection {
         Resource.Meta meta = new Resource.Meta(clock.get(), UUID.randomUUID().toString());
         Resource resource = new Resource(meta, parsedResource.body, parsedResource.mediaType);
 
-        storage().post(resource.meta.id, resource);
+        storage.post(resource.meta.id, resource);
         return Response.created(linkBuilder.entryUri(resource.meta.id)).build();
-    }
-
-    private CollectionStorage storage() {
-        return connectedStorage.getConnectionStorage(collection);
     }
 }
