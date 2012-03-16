@@ -12,7 +12,6 @@ import org.apache.abdera2.model.Entry;
 import org.apache.abdera2.model.ExtensibleElement;
 import org.apache.abdera2.model.Feed;
 import org.apache.abdera2.model.Link;
-import org.joda.time.DateTime;
 
 import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
@@ -61,9 +60,9 @@ public class ResourceAbderaAdapter {
         final Entry entry = abdera.newEntry();
         //entry.addAuthor(item.getAuthor());
         //entry.setTitle(item.getTitle());
-        entry.setUpdated(new DateTime(resource.meta.updated));
-        entry.setId(resource.meta.id);
-        entry.setEdited(new DateTime(resource.meta.updated));
+        entry.setUpdated(resource.meta.updated);
+        entry.setId(buildId(resource));
+        entry.setEdited(resource.meta.updated);
         entry.addExtension(buildEditLink(resource));
         entry.addExtension(buildEditMediaLink(resource));
         //entry.setSummary(item.getSummary());
@@ -73,9 +72,14 @@ public class ResourceAbderaAdapter {
     public Tombstone buildTombstone(final Resource resource) {
         Tombstone tombstone = abdera.getFactory().newExtensionElement(DELETED_ENTRY);
         tombstone.setWhen(resource.meta.updated);
-        tombstone.setRef(resource.meta.id);
+        tombstone.setRef(buildId(resource));
         tombstone.addExtension(buildEditLink(resource));
         return tombstone;
+    }
+
+    // compare RFC 4122 for the prefix
+    public static String buildId(Resource resource) {
+        return "urn:uuid:" + resource.meta.id;
     }
 
     public Link buildEditLink(final Resource resource) {
