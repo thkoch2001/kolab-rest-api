@@ -17,11 +17,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.abdera2.Abdera;
-
 import ro.koch.kolabrestapi.Clock;
 import ro.koch.kolabrestapi.Preconditions;
-import ro.koch.kolabrestapi.Routes.LinkBuilder;
 import ro.koch.kolabrestapi.Routes.PathParams;
 import ro.koch.kolabrestapi.models.Resource;
 import ro.koch.kolabrestapi.storage.CollectionStorage;
@@ -53,9 +50,7 @@ public class Entry {
     }
 
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML})
-    public Response get(@InjectParam Abdera abdera,
-                        @InjectParam LinkBuilder linkBuilder
-                        ) {
+    public Response get(@InjectParam ResourceAbderaAdapter abderaAdapter) {
         GetResult getResult = storage.conditionalGet(entryId, preconditions);
         ResponseBuilder rb = Response.status(getResult.status);
 
@@ -65,8 +60,7 @@ public class Entry {
              .type(getResult.resource.isDeleted()
                     ? APPLICATION_ATOMDELETED_XML_TYPE
                     : APPLICATION_ATOM_XML_TYPE)
-             .entity((new ResourceAbderaAdapter(abdera, linkBuilder))
-                      .buildFeedElement(getResult.resource));
+             .entity(abderaAdapter.buildFeedElement(getResult.resource));
         }
         return rb.build();
     }

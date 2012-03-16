@@ -1,9 +1,12 @@
 package ro.koch.kolabrestapi.resources;
 
 import static org.apache.abdera2.ext.tombstones.TombstonesHelper.DELETED_ENTRY;
+import static ro.koch.kolabrestapi.Routes.PathTemplate.AUTHORITY;
+import static ro.koch.kolabrestapi.Routes.PathTemplate.COLLECTION;
 
 import org.apache.abdera2.Abdera;
 import org.apache.abdera2.common.iri.IRI;
+import org.apache.abdera2.ext.history.FeedPagingHelper;
 import org.apache.abdera2.ext.tombstones.Tombstone;
 import org.apache.abdera2.model.Entry;
 import org.apache.abdera2.model.ExtensibleElement;
@@ -11,19 +14,36 @@ import org.apache.abdera2.model.Feed;
 import org.apache.abdera2.model.Link;
 import org.joda.time.DateTime;
 
+import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
 import ro.koch.kolabrestapi.models.Resource;
+import ro.koch.kolabrestapi.storage.CollectionStorage.ResultList;
+
+import com.google.inject.Inject;
 
 public class ResourceAbderaAdapter {
     private final Abdera abdera;
     private final LinkBuilder linkBuilder;
 
+    @Inject
     public ResourceAbderaAdapter(Abdera abdera, LinkBuilder linkBuilder) {
         super();
         this.abdera = abdera;
         this.linkBuilder = linkBuilder;
     }
 
+    public Feed buildFeed(PaginationRange range, ResultList resultList) {
+        final Feed feed = abdera.newFeed();
+        feed.setTitle(linkBuilder.getParam(AUTHORITY) + "'s collection of " + linkBuilder.getParam(COLLECTION));
+        ResourceAbderaAdapter adapter = new ResourceAbderaAdapter(abdera, linkBuilder);
+        for(final Resource resource : resultList.it) {
+            adapter.addResourceToFeed(feed, resource);
+        }
+        if(range.moreToCome(resultList.total)) {
+            FeedPagingHelper.setNext(feed, linkBuilder.next(range).toString());
+        }
+        return feed;
+    }
 
     public void addResourceToFeed(final Feed feed, final Resource resource) {
         feed.addExtension(buildFeedElement(resource));
