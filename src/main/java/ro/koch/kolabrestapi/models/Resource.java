@@ -24,6 +24,10 @@ public class Resource {
         return new Resource(new Meta(timestamp, meta.id), newResource.body, newResource.mediaType);
     }
 
+    public Resource init(String id, DateTime timestamp) {
+        return new Resource(new Meta(timestamp, id), body, mediaType);
+    }
+
     public boolean isDeleted() {
         return mediaType == null;
     }

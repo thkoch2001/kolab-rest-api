@@ -54,8 +54,7 @@ public class Collection {
     public Response post(@InjectParam Clock clock,
                          Resource parsedResource)
     {
-        Resource.Meta meta = new Resource.Meta(clock.get(), UUID.randomUUID().toString());
-        Resource resource = new Resource(meta, parsedResource.body, parsedResource.mediaType);
+        Resource resource = parsedResource.init(UUID.randomUUID().toString(), clock.get());
 
         storage.post(resource.meta.id, resource);
         return Response.created(linkBuilder.entryUri(resource.meta.id)).build();
