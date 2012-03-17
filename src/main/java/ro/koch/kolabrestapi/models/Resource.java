@@ -1,9 +1,15 @@
 package ro.koch.kolabrestapi.models;
 
+import java.util.List;
+
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Variant;
 
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Lists;
 
 public class Resource {
     public final Meta meta;
@@ -30,6 +36,19 @@ public class Resource {
 
     public boolean isDeleted() {
         return mediaType == null;
+    }
+
+    public Variant selectVariant(Request request) {
+        return request.selectVariant(availableVariants());
+    }
+
+    public byte[] asMediaType(MediaType mediaType) {
+        return body;
+    }
+
+    public List<Variant> availableVariants() {
+        return Lists.newArrayList(new Variant(mediaType, null, null),
+                                  new Variant(new MediaType("text","obscure"),null,null));
     }
 
     public static class Meta {

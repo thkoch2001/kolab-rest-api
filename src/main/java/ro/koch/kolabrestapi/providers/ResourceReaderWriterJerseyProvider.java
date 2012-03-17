@@ -50,7 +50,7 @@ public class ResourceReaderWriterJerseyProvider extends AbstractMessageReaderWri
     @Override
     public void writeTo(Resource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream) throws IOException {
-        ByteStreams.write(resource.body,
+        ByteStreams.write(resource.asMediaType(mediaType),
                           new OutputSupplier<OutputStream>(){
               @Override public OutputStream getOutput() throws IOException {return entityStream;}
           }
