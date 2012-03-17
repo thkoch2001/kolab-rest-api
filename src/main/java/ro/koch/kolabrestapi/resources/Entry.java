@@ -46,7 +46,7 @@ public class Entry {
     }
 
     @PUT public Response put(Resource resource) {
-        return condResponse(storage.conditionalPut(entryId, resource, clock.get(), preconditions));
+        return condResponse(storage.conditionalPut(resource, clock.get(), preconditions));
     }
 
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML})

@@ -28,8 +28,9 @@ public class CollectionStorage {
     // TODO different entityTags for different PaginationRanges?
     private EntityTag entityTag = newEntityTag(null);
 
-    public void post(String id, Resource resource) {
-        pushNew(id, resource);
+    public String post(Resource resource) {
+        pushNew(resource);
+        return resource.meta.id;
     }
 
     public GetResult conditionalGet(String id, Preconditions preconditions) {
@@ -42,17 +43,17 @@ public class CollectionStorage {
             return GetResult.NOT_MODIFIED;
     }
 
-    public boolean conditionalPut(String id, Resource newResource, DateTime timestamp, Preconditions preconditions) {
-        Resource oldResource = resourcesMap.get(id);
+    public boolean conditionalPut(Resource newResource, DateTime timestamp, Preconditions preconditions) {
+        Resource oldResource = resourcesMap.get(newResource.meta.id);
         if(!preconditions.shouldPerform(oldResource.meta.getETag())) return false;
-        pushUpdate(id, oldResource, oldResource.update(newResource, timestamp));
+        pushUpdate(oldResource, oldResource.update(newResource, timestamp));
         return true;
     }
 
     public boolean conditionalDelete(String id, DateTime dateTime, Preconditions preconditions) {
         Resource oldResource = resourcesMap.get(id);
         if(!preconditions.shouldPerform(oldResource.meta.getETag())) return false;
-        pushUpdate(id, oldResource, oldResource.delete(dateTime));
+        pushUpdate(oldResource, oldResource.delete(dateTime));
         return true;
     }
 
@@ -77,15 +78,15 @@ public class CollectionStorage {
         }
     }
 
-    private synchronized void pushUpdate(String id, Resource oldResource, Resource newResource) {
+    private synchronized void pushUpdate(Resource oldResource, Resource newResource) {
         removeOlderEntryFromUpdatesList(oldResource);
-        pushNew(id, newResource);
+        pushNew(newResource);
         while(purgeLatestIfTombstone()){};
     }
 
-    private synchronized void pushNew(String id, Resource resource) {
+    private synchronized void pushNew(Resource resource) {
         updates.add(0, resource);
-        resourcesMap.put(id, resource);
+        resourcesMap.put(resource.meta.id, resource);
         entityTag = newEntityTag(resource.meta.updated);
     }
 

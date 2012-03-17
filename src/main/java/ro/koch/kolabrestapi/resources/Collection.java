@@ -54,9 +54,10 @@ public class Collection {
     public Response post(@InjectParam Clock clock,
                          Resource parsedResource)
     {
-        Resource resource = parsedResource.init(UUID.randomUUID().toString(), clock.get());
-
-        storage.post(resource.meta.id, resource);
-        return Response.created(linkBuilder.entryUri(resource.meta.id)).build();
+        return Response.created(
+                linkBuilder.entryUri(
+                 storage.post(
+                  parsedResource.init(UUID.randomUUID().toString(), clock.get())
+               ))).build();
     }
 }
