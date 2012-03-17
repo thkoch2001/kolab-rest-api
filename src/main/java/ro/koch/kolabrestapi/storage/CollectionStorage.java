@@ -80,12 +80,24 @@ public class CollectionStorage {
     private synchronized void pushUpdate(String id, Resource oldResource, Resource newResource) {
         removeOlderEntryFromUpdatesList(oldResource);
         pushNew(id, newResource);
+        while(purgeLatestIfTombstone()){};
     }
 
     private synchronized void pushNew(String id, Resource resource) {
         updates.add(0, resource);
         resourcesMap.put(id, resource);
         entityTag = newEntityTag(resource.meta.updated);
+    }
+
+    private synchronized boolean purgeLatestIfTombstone() {
+        int lastIndex = updates.size() - 1;
+        if(lastIndex == -1) return false;
+        Resource lastResource = updates.get(lastIndex);
+        if(!lastResource.isDeleted()) return false;
+
+        resourcesMap.remove(lastResource.meta.id);
+        updates.remove(lastIndex);
+        return true;
     }
 
     private EntityTag newEntityTag(DateTime updated) {
