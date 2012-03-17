@@ -4,6 +4,9 @@ import static org.apache.abdera2.ext.tombstones.TombstonesHelper.DELETED_ENTRY;
 import static ro.koch.kolabrestapi.Routes.PathTemplate.AUTHORITY;
 import static ro.koch.kolabrestapi.Routes.PathTemplate.COLLECTION;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Variant;
+
 import org.apache.abdera2.Abdera;
 import org.apache.abdera2.common.iri.IRI;
 import org.apache.abdera2.ext.history.FeedPagingHelper;
@@ -64,7 +67,10 @@ public class ResourceAbderaAdapter {
         entry.setId(buildId(resource));
         entry.setEdited(resource.meta.updated);
         entry.addExtension(buildEditLink(resource));
-        entry.addExtension(buildEditMediaLink(resource));
+        for(Variant variant : resource.availableVariants()) {
+            entry.addExtension(buildEditMediaLink(resource, variant.getMediaType()));
+        }
+
         //entry.setSummary(item.getSummary());
         return entry;
     }
@@ -89,11 +95,11 @@ public class ResourceAbderaAdapter {
         return link;
     }
 
-    public Link buildEditMediaLink(final Resource resource) {
+    public Link buildEditMediaLink(final Resource resource, final MediaType mediaType) {
         Link link = abdera.getFactory().newLink();
         link.setHref(new IRI(linkBuilder.mediaEntryUri(resource.meta.id)));
         link.setRel(Link.REL_EDIT_MEDIA);
-        link.setMimeType(resource.mediaType.toString());
+        link.setMimeType(mediaType.toString());
         return link;
     }
 }
