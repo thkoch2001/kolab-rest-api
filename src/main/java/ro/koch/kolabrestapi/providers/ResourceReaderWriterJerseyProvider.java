@@ -18,7 +18,6 @@ import javax.ws.rs.ext.Provider;
 import ro.koch.kolabrestapi.models.Resource;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.OutputSupplier;
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 
 @Provider
@@ -50,10 +49,6 @@ public class ResourceReaderWriterJerseyProvider extends AbstractMessageReaderWri
     @Override
     public void writeTo(Resource resource, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream) throws IOException {
-        ByteStreams.write(resource.asMediaType(mediaType),
-                          new OutputSupplier<OutputStream>(){
-              @Override public OutputStream getOutput() throws IOException {return entityStream;}
-          }
-        );
+        resource.asMediaType(mediaType, entityStream);
     }
 }

@@ -1,5 +1,7 @@
 package ro.koch.kolabrestapi.models;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.ws.rs.core.EntityTag;
@@ -10,6 +12,8 @@ import javax.ws.rs.core.Variant;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.OutputSupplier;
 
 public class Resource {
     public final Meta meta;
@@ -42,8 +46,11 @@ public class Resource {
         return request.selectVariant(availableVariants());
     }
 
-    public byte[] asMediaType(MediaType mediaType) {
-        return body;
+    public void asMediaType(MediaType mediaType, final OutputStream out) throws IOException {
+        ByteStreams.write(body, new OutputSupplier<OutputStream>(){
+            @Override public OutputStream getOutput() throws IOException {return out;}
+          }
+        );
     }
 
     public List<Variant> availableVariants() {
