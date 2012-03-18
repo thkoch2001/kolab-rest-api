@@ -1,5 +1,7 @@
 package ro.koch.kolabrestapi.resources;
 
+import static com.google.common.base.Functions.toStringFunction;
+import static com.google.common.collect.Iterables.transform;
 import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
@@ -8,10 +10,12 @@ import javax.ws.rs.Produces;
 
 import org.apache.abdera2.Abdera;
 import org.apache.abdera2.factory.Factory;
+import org.apache.abdera2.model.Categories;
 import org.apache.abdera2.model.Service;
 import org.apache.abdera2.model.Workspace;
 
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
+import ro.koch.kolabrestapi.models.Category;
 import ro.koch.kolabrestapi.models.Collection;
 import ro.koch.kolabrestapi.storage.ConnectedStorage;
 
@@ -31,10 +35,20 @@ public class Services {
             org.apache.abdera2.model.Collection abderaCol = factory.newCollection();
             abderaCol.setTitle(collection.getTitle());
             abderaCol.setHref(linkBuilder.collectionUri(collection.getName()).toString());
+            abderaCol.setAccept(transform(collection.getAccepts(), toStringFunction()));
+            abderaCol.addCategories(buildCategories(abdera, collection));
             workspace.addCollection(abderaCol);
         }
 
         service.addWorkspace(workspace);
         return service;
+    }
+
+    private Categories buildCategories(Abdera abdera, Collection collection) {
+        Categories categories = abdera.getFactory().newCategories();
+        for(Category category : collection.getCategories()) {
+            categories.addCategory(category.getScheme().toString(), category.getTerm(), category.getLabel());
+        }
+        return categories;
     }
 }

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ro.koch.kolabrestapi.models.Collection;
+import ro.koch.kolabrestapi.models.Collection.TestCollections;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -16,8 +17,9 @@ public class ConnectedStorage {
 
     @Inject
     public ConnectedStorage() {
-        add(new Collection("contacts", "Kontakte"));
-        add(new Collection("calendar", "Kalender"));
+        for(TestCollections collection : TestCollections.values()) {
+            add(collection.collection);
+        }
     }
 
     public ImmutableSet<Collection> getCollections() {
