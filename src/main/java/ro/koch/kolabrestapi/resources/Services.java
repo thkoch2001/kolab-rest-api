@@ -2,8 +2,8 @@ package ro.koch.kolabrestapi.resources;
 
 import static com.google.common.base.Functions.toStringFunction;
 import static com.google.common.collect.Iterables.transform;
-import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMSERVICE_XML;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -23,7 +23,7 @@ import com.sun.jersey.api.core.InjectParam;
 
 public class Services {
 
-    @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML})
+    @GET @Produces({APPLICATION_ATOMSERVICE_XML,APPLICATION_XML})
     public Service get(@InjectParam LinkBuilder linkBuilder,
                        @InjectParam ConnectedStorage storage,
                        @InjectParam Abdera abdera) {

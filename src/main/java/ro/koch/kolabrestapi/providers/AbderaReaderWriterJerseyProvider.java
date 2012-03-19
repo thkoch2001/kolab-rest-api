@@ -3,6 +3,7 @@ package ro.koch.kolabrestapi.providers;
 import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMDELETED_XML;
+import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMSERVICE_XML;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,7 @@ import com.google.inject.Inject;
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 
 @Provider
-@Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML})
+@Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML,APPLICATION_ATOMSERVICE_XML})
 @Consumes(APPLICATION_ATOM_XML)
 public class AbderaReaderWriterJerseyProvider extends AbstractMessageReaderWriterProvider<Base> {
     private final Abdera abdera;

@@ -22,4 +22,7 @@ public class MediaTypes {
 
     public static final String APPLICATION_ATOMDELETED_XML = "application/atomdeleted+xml";
     public static final MediaType APPLICATION_ATOMDELETED_XML_TYPE = valueOf(APPLICATION_ATOMDELETED_XML);
+
+    public static final String APPLICATION_ATOMSERVICE_XML = "application/atomsvc+xml";
+    public static final MediaType APPLICATION_ATOMSERVICE_XML_TYPE = valueOf(APPLICATION_ATOMSERVICE_XML);
 }
