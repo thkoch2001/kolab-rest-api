@@ -41,7 +41,12 @@ public class Entry {
         return condResponse(storage.conditionalDelete(newMeta(), preconditions));
     }
 
-    @PUT public Response put(UnparsedResource unparsedResource) {
+    @PUT public Response put(@InjectParam ro.koch.kolabrestapi.models.Collection collection,
+                             UnparsedResource unparsedResource) {
+        if(!collection.isAcceptable(unparsedResource.getMediaType())) {
+            // TODO list acceptable variants
+            return Response.notAcceptable(null).build();
+        }
         return condResponse(storage.conditionalPut(
                 unparsedResource.parse(newMeta()),
                 preconditions));
