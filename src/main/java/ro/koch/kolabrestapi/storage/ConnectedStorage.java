@@ -1,18 +1,16 @@
 package ro.koch.kolabrestapi.storage;
 
 import java.util.Map;
-import java.util.Set;
 
 import ro.koch.kolabrestapi.models.Collection;
 import ro.koch.kolabrestapi.models.Collection.TestCollections;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 public class ConnectedStorage {
-    private final Set<Collection> collections = Sets.newHashSet();
+    private final Map<String, Collection> collections = Maps.newHashMap();
     private final Map<String, CollectionStorage> collectionStorages = Maps.newHashMap();
 
     @Inject
@@ -23,15 +21,19 @@ public class ConnectedStorage {
     }
 
     public ImmutableSet<Collection> getCollections() {
-        return ImmutableSet.copyOf(collections);
+        return ImmutableSet.copyOf(collections.values());
     }
 
     public CollectionStorage getCollectionStorage(String name) {
         return collectionStorages.get(name);
     }
 
+    public Collection getCollection(String name) {
+        return collections.get(name);
+    }
+
     private void add(Collection collection) {
-        collections.add(collection);
+        collections.put(collection.getName(), collection);
         collectionStorages.put(collection.getName(), new CollectionStorage());
     }
 }

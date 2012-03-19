@@ -4,6 +4,7 @@ import com.google.inject.{AbstractModule,Provides, Singleton}
 import com.google.inject.servlet.{RequestScoped}
 import com.google.common.collect.Iterables._
 import ro.koch.kolabrestapi.{Routes,PaginationRange,Preconditions}
+import ro.koch.kolabrestapi.models.Collection
 import Preconditions._
 import ro.koch.kolabrestapi.Routes.PathParams
 import ro.koch.kolabrestapi.Routes.PathTemplate._
@@ -26,6 +27,10 @@ class KolabRestApiModule extends AbstractModule {
     @RequestScoped
     @Provides def connectedStorage(storages:Storages, pathParams:PathParams):ConnectedStorage =
       storages.getForAuthority(pathParams.get(AUTHORITY))
+
+    @RequestScoped
+    @Provides def collection(connectedStorage:ConnectedStorage, pathParams:PathParams):Collection =
+      connectedStorage.getCollection(pathParams.get(COLLECTION))
 
     @RequestScoped
     @Provides def collectionStorage(connectedStorage:ConnectedStorage, pathParams:PathParams) =

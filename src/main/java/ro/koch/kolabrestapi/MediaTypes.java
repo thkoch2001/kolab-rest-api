@@ -1,10 +1,14 @@
 package ro.koch.kolabrestapi;
 
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.MediaType.valueOf;
 
 import javax.ws.rs.core.MediaType;
 
 public class MediaTypes {
+    public static final String TEXT_PLAIN_UTF8 = TEXT_PLAIN+"; charset=UTF-8";
+    public static final MediaType TEXT_PLAIN_UTF8_TYPE = valueOf(TEXT_PLAIN_UTF8);
+
     public static final String TEXT_VCARD = "text/vcard";
     public static final MediaType TEXT_VCARD_TYPE = valueOf(TEXT_VCARD);
 

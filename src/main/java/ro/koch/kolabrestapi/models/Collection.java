@@ -5,11 +5,13 @@ import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 import static com.google.common.collect.ImmutableList.of;
+import static com.google.common.collect.Iterables.contains;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_CALENDAR_XML_TYPE;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_POCO_JSON_TYPE;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_VCARD_XML_TYPE;
 import static ro.koch.kolabrestapi.MediaTypes.TEXT_CALENDAR_TYPE;
+import static ro.koch.kolabrestapi.MediaTypes.TEXT_PLAIN_UTF8_TYPE;
 import static ro.koch.kolabrestapi.MediaTypes.TEXT_VCARD_TYPE;
 
 import java.net.URI;
@@ -58,7 +60,7 @@ public class Collection {
                 of(APPLICATION_VCARD_XML_TYPE, TEXT_VCARD_TYPE, APPLICATION_POCO_JSON_TYPE),
                 "contacts"),
         texts("texts", "Texte",
-                of(TEXT_PLAIN_TYPE), "texts")
+                of(TEXT_PLAIN_TYPE, TEXT_PLAIN_UTF8_TYPE), "texts")
 
         ;
         public final Collection collection;
@@ -72,5 +74,9 @@ public class Collection {
                 throw propagate(e);
             }
         }
+    }
+
+    public boolean isAcceptable(MediaType mediaType) {
+        return contains(accepts, mediaType);
     }
 }

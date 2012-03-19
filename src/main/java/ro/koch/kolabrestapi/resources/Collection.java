@@ -53,8 +53,13 @@ public class Collection {
 
     @POST
     public Response post(@InjectParam Clock clock,
+                         @InjectParam ro.koch.kolabrestapi.models.Collection collection,
                          UnparsedResource unparsedResource)
     {
+        if(!collection.isAcceptable(unparsedResource.getMediaType())) {
+            // TODO list acceptable variants
+            return Response.notAcceptable(null).build();
+        }
         return Response.created(
                 linkBuilder.entryUri(
                  storage.post(
