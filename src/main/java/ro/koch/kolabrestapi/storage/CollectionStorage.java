@@ -16,6 +16,7 @@ import org.joda.time.DateTime;
 import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.Preconditions;
 import ro.koch.kolabrestapi.models.Resource;
+import ro.koch.kolabrestapi.models.Resource.Meta;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -43,17 +44,17 @@ public class CollectionStorage {
             return GetResult.NOT_MODIFIED;
     }
 
-    public boolean conditionalPut(Resource newResource, DateTime timestamp, Preconditions preconditions) {
+    public boolean conditionalPut(Resource newResource, Preconditions preconditions) {
         Resource oldResource = resourcesMap.get(newResource.meta.id);
         if(!preconditions.shouldPerform(oldResource.meta.getETag())) return false;
-        pushUpdate(oldResource, oldResource.update(newResource, timestamp));
+        pushUpdate(oldResource, newResource);
         return true;
     }
 
-    public boolean conditionalDelete(String id, DateTime dateTime, Preconditions preconditions) {
-        Resource oldResource = resourcesMap.get(id);
+    public boolean conditionalDelete(Meta meta, Preconditions preconditions) {
+        Resource oldResource = resourcesMap.get(meta.id);
         if(!preconditions.shouldPerform(oldResource.meta.getETag())) return false;
-        pushUpdate(oldResource, oldResource.delete(dateTime));
+        pushUpdate(oldResource, oldResource.delete(meta));
         return true;
     }
 

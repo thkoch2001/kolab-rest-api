@@ -1,5 +1,8 @@
 package ro.koch.kolabrestapi.models;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -26,16 +29,8 @@ public class Resource {
         this.mediaType = mediaType;
     }
 
-    public Resource delete(DateTime timestamp) {
-        return new Resource(new Meta(timestamp, meta.id), null, null);
-    }
-
-    public Resource update(Resource newResource, DateTime timestamp) {
-        return new Resource(new Meta(timestamp, meta.id), newResource.body, newResource.mediaType);
-    }
-
-    public Resource init(String id, DateTime timestamp) {
-        return new Resource(new Meta(timestamp, id), body, mediaType);
+    public Resource delete(Meta meta) {
+        return new Resource(meta, null, null);
     }
 
     public boolean isDeleted() {
@@ -63,8 +58,8 @@ public class Resource {
         public final String id;
 
         public Meta(DateTime dateTime, String id) {
-            this.updated = dateTime;
-            this.id = id;
+            this.updated = checkNotNull(dateTime);
+            this.id = checkNotNull(emptyToNull(id));
         }
 
         public EntityTag getETag() {

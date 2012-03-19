@@ -16,7 +16,8 @@ import javax.ws.rs.core.Response;
 import ro.koch.kolabrestapi.Clock;
 import ro.koch.kolabrestapi.Preconditions;
 import ro.koch.kolabrestapi.Routes.PathParams;
-import ro.koch.kolabrestapi.models.Resource;
+import ro.koch.kolabrestapi.models.Resource.Meta;
+import ro.koch.kolabrestapi.models.UnparsedResource;
 import ro.koch.kolabrestapi.storage.CollectionStorage;
 
 import com.google.inject.Inject;
@@ -37,17 +38,23 @@ public class Entry {
     }
 
     @DELETE public Response delete() {
-        return condResponse(storage.conditionalDelete(entryId, clock.get(), preconditions));
+        return condResponse(storage.conditionalDelete(newMeta(), preconditions));
     }
 
-    @PUT public Response put(Resource resource) {
-        return condResponse(storage.conditionalPut(resource, clock.get(), preconditions));
+    @PUT public Response put(UnparsedResource unparsedResource) {
+        return condResponse(storage.conditionalPut(
+                unparsedResource.parse(newMeta()),
+                preconditions));
     }
 
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML})
     public Response get(@InjectParam ResourceAbderaAdapter abderaAdapter,
                         @InjectParam EntryGetCommon getCommon) {
         return getCommon.getEntryResponse(abderaAdapter);
+    }
+
+    private Meta newMeta() {
+        return new Meta(clock.get(), entryId);
     }
 
     private static Response condResponse(boolean conditionOk) {

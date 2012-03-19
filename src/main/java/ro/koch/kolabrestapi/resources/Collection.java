@@ -17,7 +17,8 @@ import ro.koch.kolabrestapi.Clock;
 import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.Preconditions;
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
-import ro.koch.kolabrestapi.models.Resource;
+import ro.koch.kolabrestapi.models.Resource.Meta;
+import ro.koch.kolabrestapi.models.UnparsedResource;
 import ro.koch.kolabrestapi.storage.CollectionStorage;
 import ro.koch.kolabrestapi.storage.CollectionStorage.ResultList;
 
@@ -52,12 +53,12 @@ public class Collection {
 
     @POST
     public Response post(@InjectParam Clock clock,
-                         Resource parsedResource)
+                         UnparsedResource unparsedResource)
     {
         return Response.created(
                 linkBuilder.entryUri(
                  storage.post(
-                  parsedResource.init(UUID.randomUUID().toString(), clock.get())
+                  unparsedResource.parse(new Meta(clock.get(), UUID.randomUUID().toString()))
                ))).build();
     }
 }
