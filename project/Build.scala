@@ -30,6 +30,7 @@ object Dependencies {
     val jersey  = "1.12"
     val abdera  = "2.0-SNAPSHOT"
     val scalate  = "[1.5.3,)"
+    val guice = "[3.0,)"
   //    val jetty   = "8.1.0.v20120127"
   //    val slf4j   = "1.6.4"
   //    val logback = "1.0.0"
@@ -43,7 +44,8 @@ object Dependencies {
     "com.sun.jersey" % "jersey-core" % V.jersey,
     "com.sun.jersey" % "jersey-servlet" % V.jersey,
     "com.sun.jersey.contribs" % "jersey-guice" % V.jersey,
-    "com.google.inject" % "guice" % "[3.0,)",
+    "com.google.inject" % "guice" % V.guice,
+    "com.google.inject.extensions" % "guice-multibindings" % V.guice,
     "com.google.guava" % "guava" % "[11.0.1,)",
     "org.apache.abdera2" % "abdera2-core" % V.abdera,
     "org.apache.abdera2" % "abdera2-common" % V.abdera,

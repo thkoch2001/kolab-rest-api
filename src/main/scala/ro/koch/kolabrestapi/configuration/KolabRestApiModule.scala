@@ -8,6 +8,7 @@ import ro.koch.kolabrestapi.models.Collection
 import Preconditions._
 import ro.koch.kolabrestapi.Routes.PathParams
 import ro.koch.kolabrestapi.Routes.PathTemplate._
+import ro.koch.resourcefacades.FacadeRegistry
 import org.apache.abdera2.Abdera
 import ro.koch.kolabrestapi.storage.{Storages,ConnectedStorage,CollectionStorage}
 import javax.ws.rs.core._

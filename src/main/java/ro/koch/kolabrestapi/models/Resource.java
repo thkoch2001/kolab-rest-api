@@ -14,19 +14,22 @@ import javax.ws.rs.core.Variant;
 
 import org.joda.time.DateTime;
 
+import ro.koch.resourcefacades.FacadeFactory;
+import ro.koch.resourcefacades.FacadesProvider;
+import ro.koch.resourcefacades.facades.AbstractWriter.WriterFactory;
+
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.OutputSupplier;
 
 public class Resource {
     public final Meta meta;
-    public final byte[] body;
+    public final FacadesProvider facadesProvider;
     public final MediaType mediaType;
 
-    public Resource(Meta meta, byte[] body, MediaType mediaType) {
-        this.meta = meta;
-        this.body = body;
-        this.mediaType = mediaType;
+    public Resource(Meta meta, FacadesProvider facadesProvider, MediaType mediaType) {
+        this.meta = checkNotNull(meta);
+        this.facadesProvider = checkNotNull(facadesProvider);
+        this.mediaType = checkNotNull(mediaType);
     }
 
     public Resource delete(Meta meta) {
@@ -41,11 +44,14 @@ public class Resource {
         return request.selectVariant(availableVariants());
     }
 
-    public void asMediaType(MediaType mediaType, final OutputStream out) throws IOException {
-        ByteStreams.write(body, new OutputSupplier<OutputStream>(){
-            @Override public OutputStream getOutput() throws IOException {return out;}
-          }
-        );
+    public void asMediaType(final MediaType mediaType, final OutputStream out) throws IOException {
+        ro.koch.resourcefacades.Writer writer = facadesProvider.getFacade(ro.koch.resourcefacades.Writer.class, new Predicate<FacadeFactory<?>>() {
+         @Override public boolean apply(FacadeFactory<?> facadeFactory) {
+        return ((WriterFactory)facadeFactory).isWriteable(mediaType);
+         }
+      });
+        if(null == writer) throw new RuntimeException("no writer for mediatype: "+mediaType);
+        writer.writeTo(out);
     }
 
     public List<Variant> availableVariants() {

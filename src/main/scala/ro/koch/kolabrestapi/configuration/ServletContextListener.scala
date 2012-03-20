@@ -3,13 +3,18 @@ package ro.koch.kolabrestapi.configuration
 import _root_.com.google.inject.Guice
 import _root_.com.google.inject.servlet.GuiceServletContextListener
 import _root_.org.fusesource.scalate.guice.ScalateModule
+import _root_.ro.koch.kolabrestapi.readers.ReadersGuiceModule
+import _root_.ro.koch.resourcefacades.facades.GuiceModule
 
 class ServletContextListener extends GuiceServletContextListener {
   def getInjector = {
     System.setProperty("scalate.mode","dev")
-    Guice.createInjector(new JerseyGuiceModule,
+    Guice.createInjector(
+        new ReadersGuiceModule,
+        new JerseyGuiceModule,
+        new GuiceModule,
         new KolabRestApiModule,
-      new ScalateModule() {
+        new ScalateModule() {
 
         // TODO add some custom provider methods here
         // which can then be injected into resources or templates
