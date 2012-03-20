@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 
 public class TrivialFacadeFactory<T> implements FacadeFactory<T> {
@@ -25,6 +26,10 @@ public class TrivialFacadeFactory<T> implements FacadeFactory<T> {
         } catch (NoSuchMethodException e) {
             throw propagate(e);
         }
+    }
+
+    public static <T> TrivialFacadeFactory<T> of(Class<T> classToBuild, Class<?> dependentClass) {
+        return new TrivialFacadeFactory<T>(classToBuild, ImmutableSet.of(dependentClass));
     }
 
     @Override

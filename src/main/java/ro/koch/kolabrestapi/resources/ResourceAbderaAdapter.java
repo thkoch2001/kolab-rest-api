@@ -20,6 +20,7 @@ import ro.koch.kolabrestapi.PaginationRange;
 import ro.koch.kolabrestapi.Routes.LinkBuilder;
 import ro.koch.kolabrestapi.models.Resource;
 import ro.koch.kolabrestapi.storage.CollectionStorage.ResultList;
+import ro.koch.resourcefacades.TitleAndSummary;
 
 import com.google.inject.Inject;
 
@@ -62,7 +63,7 @@ public class ResourceAbderaAdapter {
     public Entry buildEntry(final Resource resource) {
         final Entry entry = abdera.newEntry();
         //entry.addAuthor(item.getAuthor());
-        //entry.setTitle(item.getTitle());
+
         entry.setUpdated(resource.meta.updated);
         entry.setId(buildId(resource));
         entry.setEdited(resource.meta.updated);
@@ -71,7 +72,14 @@ public class ResourceAbderaAdapter {
             entry.addExtension(buildEditMediaLink(resource, variant.getMediaType()));
         }
 
-        //entry.setSummary(item.getSummary());
+        TitleAndSummary titleAndSummary = resource.facadesProvider.getFacade(TitleAndSummary.class);
+        if(titleAndSummary != null) {
+            entry.setTitle(titleAndSummary.getTitle());
+            entry.setSummary(titleAndSummary.getSummary());
+        } else {
+            entry.setTitle("No TitleAndSummary facade found");
+        }
+
         return entry;
     }
 

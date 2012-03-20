@@ -39,8 +39,8 @@ public class FacadesProvider {
     public <T> T getFacade(Class<T> clazz) {
         if(!facades.containsKey(clazz)) {
             FacadeFactory<?> factory = resolveFacadeFactory(clazz);
-            // check factory type
-            // check for null
+            // TODO check factory type
+            if(null==factory) return null;
             facades.put(checkNotNull(clazz), factory.build(this));
         }
         return facades.getInstance(clazz);
