@@ -1,27 +1,25 @@
 package ro.koch.resourcefacades.facades;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterables.getFirst;
 import ro.koch.resourcefacades.TitleAndSummary;
-
-import com.google.common.base.Splitter;
 
 public class TextTitleAndSummary implements TitleAndSummary {
     private final String text;
-    private final static Splitter titleSplitter = Splitter.on("\n").limit(1)
-                                                  .trimResults();
+    private final static int TITLE_LENGTH = 90;
 
     public TextTitleAndSummary(String text) {
         this.text = checkNotNull(text);
     }
 
     @Override public String getTitle() {
-        String firstLine = getFirst(titleSplitter.split(text),"NO TITLE");
-        return firstLine.substring(0, 90);
+        int newLinePos = text.indexOf("\n");
+        String firstLine = newLinePos == -1 ? text : text.substring(0, newLinePos);
+
+        return firstLine.length() <= TITLE_LENGTH ? firstLine
+               : firstLine.substring(0, TITLE_LENGTH - 4) + " ...";
     }
 
     @Override public String getSummary() {
         return text;
     }
-
 }
