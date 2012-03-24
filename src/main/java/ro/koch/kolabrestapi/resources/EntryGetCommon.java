@@ -2,6 +2,8 @@ package ro.koch.kolabrestapi.resources;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML_TYPE;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMDELETED_XML_TYPE;
 import static ro.koch.kolabrestapi.Routes.PathTemplate.ENTRY;
 
@@ -68,6 +70,10 @@ public class EntryGetCommon {
                    : APPLICATION_ATOM_XML_TYPE)
             .entity(abderaAdapter.buildFeedElement(gr.resource));
          }});
+    }
+
+    static Response condResponse(boolean conditionOk) {
+        return Response.status(conditionOk ? NO_CONTENT : PRECONDITION_FAILED).build();
     }
 
     private interface OkFkt {

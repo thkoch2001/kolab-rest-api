@@ -2,14 +2,12 @@ package ro.koch.kolabrestapi.resources;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_ATOM_XML;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
-import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static ro.koch.kolabrestapi.MediaTypes.APPLICATION_ATOMDELETED_XML;
 import static ro.koch.kolabrestapi.Routes.PathTemplate.ENTRY;
+import static ro.koch.kolabrestapi.resources.EntryGetCommon.condResponse;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -17,7 +15,6 @@ import ro.koch.kolabrestapi.Clock;
 import ro.koch.kolabrestapi.Preconditions;
 import ro.koch.kolabrestapi.Routes.PathParams;
 import ro.koch.kolabrestapi.models.Resource.Meta;
-import ro.koch.kolabrestapi.models.UnparsedResource;
 import ro.koch.kolabrestapi.storage.CollectionStorage;
 
 import com.google.inject.Inject;
@@ -41,17 +38,6 @@ public class Entry {
         return condResponse(storage.conditionalDelete(newMeta(), preconditions));
     }
 
-    @PUT public Response put(@InjectParam ro.koch.kolabrestapi.models.Collection collection,
-                             UnparsedResource unparsedResource) {
-        if(!collection.isAcceptable(unparsedResource.getMediaType())) {
-            // TODO list acceptable variants
-            return Response.notAcceptable(null).build();
-        }
-        return condResponse(storage.conditionalPut(
-                unparsedResource.parse(newMeta()),
-                preconditions));
-    }
-
     @GET @Produces({APPLICATION_ATOM_XML,APPLICATION_XML,APPLICATION_ATOMDELETED_XML})
     public Response get(@InjectParam ResourceAbderaAdapter abderaAdapter,
                         @InjectParam EntryGetCommon getCommon) {
@@ -60,9 +46,5 @@ public class Entry {
 
     private Meta newMeta() {
         return new Meta(clock.get(), entryId);
-    }
-
-    private static Response condResponse(boolean conditionOk) {
-        return Response.status(conditionOk ? NO_CONTENT : PRECONDITION_FAILED).build();
     }
 }
