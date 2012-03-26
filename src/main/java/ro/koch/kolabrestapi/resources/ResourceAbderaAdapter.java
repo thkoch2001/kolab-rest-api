@@ -72,7 +72,7 @@ public class ResourceAbderaAdapter {
             entry.addExtension(buildEditMediaLink(resource, variant.getMediaType()));
         }
 
-        TitleAndSummary titleAndSummary = resource.facadesProvider.getFacade(TitleAndSummary.class);
+        TitleAndSummary titleAndSummary = resource.getFacade(TitleAndSummary.class);
         if(titleAndSummary != null) {
             entry.setTitle(titleAndSummary.getTitle());
             entry.setSummary(titleAndSummary.getSummary());

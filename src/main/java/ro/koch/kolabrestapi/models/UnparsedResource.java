@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import ro.koch.kolabrestapi.models.Resource.Meta;
 import ro.koch.resourcefacades.FacadeRegistry;
-import ro.koch.resourcefacades.FacadesProvider;
+import ro.koch.resourcefacades.FacadeProvider;
 import ro.koch.resourcefacades.Reader;
 
 import com.google.common.collect.MutableClassToInstanceMap;
@@ -29,7 +29,7 @@ public class UnparsedResource<T> {
     public Resource parse(Meta meta) {
         MutableClassToInstanceMap<Object> inputFacades = MutableClassToInstanceMap.create();
         inputFacades.putInstance(reader.getParsedClass(), reader.readFrom(in));
-        FacadesProvider facadesProvider = new FacadesProvider(facadeRegistry, inputFacades);
+        FacadeProvider facadesProvider = new FacadeProvider(facadeRegistry, inputFacades);
         return new Resource(meta, facadesProvider, mediaType);
     }
 

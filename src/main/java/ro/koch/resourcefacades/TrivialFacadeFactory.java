@@ -33,7 +33,7 @@ public class TrivialFacadeFactory<T> implements FacadeFactory<T> {
     }
 
     @Override
-    public T build(FacadesProvider resourceHandler) {
+    public T build(FacadeProvider resourceHandler) {
         try {
             return ctor.newInstance(resourceHandler.getFacade(getFirst()));
         } catch (IllegalArgumentException e) {

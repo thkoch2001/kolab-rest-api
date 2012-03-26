@@ -12,11 +12,11 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
 
-public class FacadesProvider {
+public class FacadeProvider {
     private final FacadeRegistry facadeRegistry;
     private final MutableClassToInstanceMap<Object> facades = MutableClassToInstanceMap.create();
 
-    public FacadesProvider(FacadeRegistry facadeRegistry, ClassToInstanceMap<Object> inputFacades) {
+    public FacadeProvider(FacadeRegistry facadeRegistry, ClassToInstanceMap<Object> inputFacades) {
         this.facadeRegistry = checkNotNull(facadeRegistry);
         for(Entry<Class<? extends Object>, ? extends Object> entry: inputFacades.entrySet()) {
             facades.put(entry.getKey(), checkNotNull(entry.getValue()));
@@ -24,7 +24,7 @@ public class FacadesProvider {
         checkArgument(!facades.isEmpty(),"No inputFacades provided!");
     }
 
-    public FacadesProvider(FacadeRegistry facadeRegistry, MediaType mediaType, Class<Object> clazz, Object facade) {
+    public FacadeProvider(FacadeRegistry facadeRegistry, MediaType mediaType, Class<Object> clazz, Object facade) {
         this(facadeRegistry, ImmutableClassToInstanceMap.builder().put(clazz, facade).build());
     }
 

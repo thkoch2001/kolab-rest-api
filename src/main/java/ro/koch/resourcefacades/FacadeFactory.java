@@ -3,7 +3,7 @@ package ro.koch.resourcefacades;
 import com.google.common.base.Predicate;
 
 public interface FacadeFactory<T> {
-    public T build(FacadesProvider resourceHandler);
+    public T build(FacadeProvider resourceHandler);
 
     /**
      * Dependency Facades needed by this factory.

@@ -15,7 +15,7 @@ import javax.ws.rs.core.Variant;
 import org.joda.time.DateTime;
 
 import ro.koch.resourcefacades.FacadeFactory;
-import ro.koch.resourcefacades.FacadesProvider;
+import ro.koch.resourcefacades.FacadeProvider;
 import ro.koch.resourcefacades.facades.AbstractWriter.WriterFactory;
 
 import com.google.common.base.Predicate;
@@ -23,12 +23,12 @@ import com.google.common.collect.Lists;
 
 public class Resource {
     public final Meta meta;
-    public final FacadesProvider facadesProvider;
+    public final FacadeProvider facadeProvider;
     public final MediaType mediaType;
 
-    public Resource(Meta meta, FacadesProvider facadesProvider, MediaType mediaType) {
+    public Resource(Meta meta, FacadeProvider facadeProvider, MediaType mediaType) {
         this.meta = checkNotNull(meta);
-        this.facadesProvider = checkNotNull(facadesProvider);
+        this.facadeProvider = checkNotNull(facadeProvider);
         this.mediaType = checkNotNull(mediaType);
     }
 
@@ -45,7 +45,7 @@ public class Resource {
     }
 
     public void asMediaType(final MediaType mediaType, final OutputStream out) throws IOException {
-        ro.koch.resourcefacades.Writer writer = facadesProvider.getFacade(ro.koch.resourcefacades.Writer.class, new Predicate<FacadeFactory<?>>() {
+        ro.koch.resourcefacades.Writer writer = facadeProvider.getFacade(ro.koch.resourcefacades.Writer.class, new Predicate<FacadeFactory<?>>() {
          @Override public boolean apply(FacadeFactory<?> facadeFactory) {
         return ((WriterFactory)facadeFactory).isWriteable(mediaType);
          }
@@ -72,6 +72,10 @@ public class Resource {
             // TODO for production it is not save enough to just use the timestamp
             return new EntityTag(updated.toString(),true);
         }
+    }
+
+    public <T> T getFacade(Class<T> clazz) {
+        return facadeProvider.getFacade(clazz);
     }
 
 
