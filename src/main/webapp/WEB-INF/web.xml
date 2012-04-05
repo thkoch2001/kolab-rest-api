@@ -14,7 +14,18 @@
     <filter-name>Guice Filter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-    <error-page>
+
+  <!-- Scalate config -->
+  <filter>
+    <filter-name>TemplateEngineFilter</filter-name>
+    <filter-class>org.fusesource.scalate.servlet.TemplateEngineFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>TemplateEngineFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <error-page>
     <error-code>500</error-code>
     <location>/WEB-INF/scalate/errors/500.scaml</location>
   </error-page>

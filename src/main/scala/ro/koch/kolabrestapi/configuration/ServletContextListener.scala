@@ -22,7 +22,8 @@ class ServletContextListener extends GuiceServletContextListener {
         // @Provides def createSomething = new MyThing()
 
         // lets add any package names which contain JAXRS resources
-        override def resourcePackageNames = "ro.koch.kolabrestapi.providers" :: "ro.koch.kolabrestapi.resources" :: super.resourcePackageNames
+        override def resourcePackageNames
+          = "ro.koch.kolabrestapi.providers" :: "ro.koch.kolabrestapi.resources" :: "org.fusesource.scalate.console" :: super.resourcePackageNames
 
         override def createResourceConfigProperties: Map[String, AnyRef] = {
           val answer = super.createResourceConfigProperties
@@ -30,7 +31,9 @@ class ServletContextListener extends GuiceServletContextListener {
           answer ++ Map(
             "com.sun.jersey.spi.container.ContainerRequestFilters" -> "com.sun.jersey.api.container.filter.LoggingFilter",
             "com.sun.jersey.spi.container.ContainerResponseFilters" -> "com.sun.jersey.api.container.filter.LoggingFilter",
-            "com.sun.jersey.config.feature.Trace" -> "true"
+            "com.sun.jersey.config.feature.Trace" -> "true",
+            "com.sun.jersey.config.feature.FilterForwardOn404" -> "true",
+            "com.sun.jersey.config.feature.ImplicitViewables" -> "true"
           )
         }
       })

@@ -19,7 +19,9 @@ import ro.koch.kolabrestapi.models.Category;
 import ro.koch.kolabrestapi.models.Collection;
 import ro.koch.kolabrestapi.storage.ConnectedStorage;
 
+import com.google.inject.Injector;
 import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.api.view.Viewable;
 
 public class Services {
 
@@ -42,6 +44,17 @@ public class Services {
 
         service.addWorkspace(workspace);
         return service;
+    }
+
+    @GET @Produces("text/html,application/xhtml+xml")
+    public Viewable get(@InjectParam Injector inj) {
+        return new Viewable("index", getServiceDoc(inj), Service.class);
+    }
+
+    private Service getServiceDoc(Injector inj) {
+        return get(inj.getInstance(LinkBuilder.class),
+                   inj.getInstance(ConnectedStorage.class),
+                   inj.getInstance(Abdera.class));
     }
 
     private Categories buildCategories(Abdera abdera, Collection collection) {
