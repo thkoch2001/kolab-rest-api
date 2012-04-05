@@ -12,6 +12,8 @@ object Build extends sbt.Build {
     .settings(WebPlugin.webSettings: _*)
     .settings(
       version := "0.1",
+retrieveManaged := true,
+
       organization := "ro.koch",
      // scalaVersion := "2.9.0-1"
       resolvers ++= resolutionRepos,
