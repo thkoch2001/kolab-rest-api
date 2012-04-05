@@ -32,8 +32,15 @@ public class Resource {
         this.mediaType = checkNotNull(mediaType);
     }
 
+    private Resource(Meta meta) {
+        // @TODO create extra resource class for deleted resources!
+        this.meta = checkNotNull(meta);
+        this.facadeProvider = null;
+        this.mediaType = null;
+    }
+
     public Resource delete(Meta meta) {
-        return new Resource(meta, null, null);
+        return new Resource(meta);
     }
 
     public boolean isDeleted() {
